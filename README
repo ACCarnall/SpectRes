@@ -1,0 +1,7 @@
+SpectRes is a Python function which efficiently resamples spectra and their associated uncertainties onto an arbitrary wavelength grid. The function works with any grid of wavelength values, including non-uniform sampling, and preserves the integrated flux. 
+
+This may be of use for binning data to increase the signal to noise ratio, obtaining synthetic photometry, or resampling model spectra to match the sampling of observed data for spectral energy distribution fitting. 
+
+The function takes three arguments, firstly "spec_wavs", an array of wavelengths corresponding to the current sampling of the spectrum. Secondly "spec_fluxes", a 1D or 2D array of flux values with the first axis running over wavelength and the second (if present) over different spectra to be resampled. The third argument, "resampling", is the desired sampling. A keyword argument, "spec_errs" may also be passed of the same shape as "spec_fluxes" containing the uncertainty on each flux value. 
+
+The function returns an array, "resampled" containing the resampled spectrum or spectra, with first dimension the same length as "resampling" and second dimension (if present) the same length as the second dimension of "spec_fluxes". If the keyword argument "spec_errs" is passed, a second array, "resampled_errs" of the same shape, containing the resampled error spectrum or spectra is also returned.
