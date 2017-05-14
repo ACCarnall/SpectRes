@@ -1,3 +1,4 @@
+# Example data file from Carnall et al. (2015) to illustrate spectral resampling with errors
 #     wavelength(A)           f_lambda(Wm-2A-1)
 6.500000000000000000e+03 1.653476377444839247e-21 3.155742026318492105e-21
 6.501000000000000000e+03 -2.469521408126135989e-21 3.477361833154326171e-21
