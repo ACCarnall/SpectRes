@@ -6,6 +6,10 @@ This may be of use for binning data to increase the signal to noise ratio, obtai
 
 An article explaining the method the code employs will be published at www.ArXiv.org in the coming days. If you make use of the code in your research, please cite this article in any publications.
 
+## Installation
+
+The code is essentially pretty simple and so is currently formatted as a single Python function. If you want the function to be available to your other Python scripts, either copy the _spectres.py_ file into the directory containing the scripts, or you can add the directory you clone the repository into to your **PYTHONPATH** variable.
+
 ## Using The Code
 
 The function takes three arguments, firstly _**spec_wavs**_, an array of wavelengths corresponding to the current sampling of the spectrum. Secondly _**spec_fluxes**_, a 1D or 2D array of flux values with the first axis running over wavelength and the second (if present) over different spectra to be resampled. The third argument, _**resampling**_, is the desired sampling. A keyword argument, _**spec_errs**_ may also be passed of the same shape as _**spec_fluxes**_ containing the uncertainty on each flux value. 
