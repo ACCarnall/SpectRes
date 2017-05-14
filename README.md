@@ -8,7 +8,7 @@ An article explaining the method the code employs will be published at www.ArXiv
 
 ## Installation
 
-The code is essentially pretty simple and so is currently formatted as a single Python function. If you want the function to be available to your other Python scripts, either copy the _spectres.py_ file into the directory containing the scripts, or you can add the directory you clone the repository into to your **PYTHONPATH** variable.
+The code is currently formatted as a single Python function. If you want the function to be available to your other Python scripts, either copy the _spectres.py_ file into the directory containing the scripts, or you can add the directory you clone the repository into to your **PYTHONPATH** variable.
 
 ## Using The Code
 
