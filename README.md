@@ -4,7 +4,7 @@ SpectRes is a Python function which efficiently resamples spectra and their asso
 
 This may be of use for binning data to increase the signal to noise ratio, obtaining synthetic photometry, or resampling model spectra to match the sampling of observed data for spectral energy distribution fitting. 
 
-An article explaining the method the code employs will be published at www.ArXiv.org in the coming days. If you make use of the code in your research, please cite this article in any publications.
+An article explaining the method the code uses is available at https://arxiv.org/abs/1705.05165. If you make use of the code in your research, please cite this article in any publications.
 
 ## Installation
 
