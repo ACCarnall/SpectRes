@@ -4,11 +4,11 @@ SpectRes is a Python function which efficiently resamples spectra and their asso
 
 This may be of use for binning data to increase the signal to noise ratio, obtaining synthetic photometry, or resampling model spectra to match the sampling of observed data for spectral energy distribution fitting. 
 
-An article explaining the method the code employs will be published at www.ArXiv.org in the coming days. If you make use of the code in your research, please cite this article in any publications.
+An article explaining the method the code uses is available at https://arxiv.org/abs/1705.05165. If you make use of the code in your research, please cite this article in any publications.
 
 ## Installation
 
-The code is essentially pretty simple and so is currently formatted as a single Python function. If you want the function to be available to your other Python scripts, either copy the _spectres.py_ file into the directory containing the scripts, or you can add the directory you clone the repository into to your **PYTHONPATH** variable.
+The code is currently formatted as a single Python function. If you want the function to be available to your other Python scripts, either copy the _spectres.py_ file into the directory containing the scripts, or you can add the directory containing it to your **PYTHONPATH** variable.
 
 ## Using The Code
 
@@ -18,4 +18,4 @@ The function returns an array, _**resampled**_ containing the resampled spectrum
 
 ## Example Files
 
-Two examples are provided, the first resamples the spectrum of a high redshift quasar from Carnall et al. (2015) onto a coarser wavelength grid (bins the data) in order to improve the signal to noise ratio. The second resamples a whole grid of BC03 models (available at http://www.bruzual.org/bc03) onto a new wavelength grid.
+Two examples are provided, the first rebins the spectrum of a high redshift quasar from Carnall et al. (2015) onto a coarser wavelength grid (bins the data) in order to improve the signal to noise ratio. The second resamples a whole grid of BC03 models (available at http://www.bruzual.org/bc03) onto a new wavelength grid.
