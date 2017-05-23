@@ -1,1 +1,1 @@
-import spectres
+from spectres import spectres
