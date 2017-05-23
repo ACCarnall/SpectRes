@@ -18,4 +18,4 @@ The function returns an array, _**resampled**_ containing the resampled spectrum
 
 ## Example Files
 
-Two examples are provided, the first resamples the spectrum of a high redshift quasar from Carnall et al. (2015) onto a coarser wavelength grid (bins the data) in order to improve the signal to noise ratio. The second resamples a whole grid of BC03 models (available at http://www.bruzual.org/bc03) onto a new wavelength grid.
+Two examples are provided, the first rebins the spectrum of a high redshift quasar from Carnall et al. (2015) onto a coarser wavelength grid (bins the data) in order to improve the signal to noise ratio. The second resamples a whole grid of BC03 models (available at http://www.bruzual.org/bc03) onto a new wavelength grid.
