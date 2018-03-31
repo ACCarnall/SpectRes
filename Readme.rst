@@ -6,9 +6,9 @@ SpectRes is a Python function which efficiently resamples spectra and their asso
 Documentation
 -------------
 
-The code's documentation is available at `spectres.readthedocs.io <spectres.readthedocs.io>`_.
+The code's documentation is available at `spectres.readthedocs.io <https://spectres.readthedocs.io>`_.
 
-For an explanation of how the code works take a look at `ArXiv1705.05165 <https://arxiv.org/abs/1705.05165>`_. Please consider citing this publication if you use SpectRes in your research.
+For an explanation of how the code works take a look at `ArXiv:1705.05165 <https://arxiv.org/abs/1705.05165>`_. Please consider citing this publication if you use SpectRes in your research.
 
 
 Installation

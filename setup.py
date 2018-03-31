@@ -7,4 +7,5 @@ setup(name='SpectRes',
       author_email='adamc@roe.ac.uk',
       url='https://www.github.com/ACCarnall/spectres',
       packages=['spectres'],
+      install_requires=["numpy"]
      )
