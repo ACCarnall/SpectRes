@@ -1,8 +1,3 @@
-.. SpectRes documentation master file, created by
-   sphinx-quickstart on Sat Mar 31 10:52:51 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 SpectRes: Simple Spectral Resampling
 ====================================
 
@@ -18,17 +13,10 @@ SpectRes can be installed using pip
 
 	pip install spectres
 
-
+	
 Documentation
 -------------
 
-The code is developed at `github.com/ACCarnall/spectres <https://github.com/ACCarnall/spectres>`_. Take a look in the examples folder for some more guidance.
+The code's documentation is available at `spectres.readthedocs.io <https://spectres.readthedocs.io>`_.  Take a look in the examples folder of this repository for some more guidance.
 
-For an explanation of how the code works take a look at `ArXiv1705.05165 <https://arxiv.org/abs/1705.05165>`_. Please consider citing this publication if you use SpectRes in your research.
-
-
-API Documentation
------------------
-
-.. autofunction:: spectres.spectres
-
+For an explanation of how the code works take a look at `ArXiv:1705.05165 <https://arxiv.org/abs/1705.05165>`_. Please consider citing this publication if you use SpectRes in your research.

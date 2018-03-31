@@ -1,1 +1,1 @@
-from spectres import spectres
+from .spectral_resampling import spectres

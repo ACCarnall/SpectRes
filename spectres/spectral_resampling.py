@@ -84,7 +84,7 @@ def spectres(new_spec_wavs, old_spec_wavs, spec_fluxes, spec_errs=None):
     stop = 0
 
     # Calculate the new spectral flux and uncertainty values, loop over the new bins
-    for j in xrange(new_spec_wavs.shape[0]):
+    for j in range(new_spec_wavs.shape[0]):
 
         # Find the first old bin which is partially covered by the new bin
         while spec_lhs[start+1] <= filter_lhs[j]:
