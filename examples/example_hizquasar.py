@@ -11,7 +11,7 @@ spectrum = np.loadtxt("VST-ATLAS_J025.6821-33.4627.txt")
 regrid = np.arange(6510., 9385, 5.) + 2.5
 
 # Call the spectres function to resample the input spectrum or spectra to the new wavelength grid
-spec_resample, spec_errs_resample = spectres(spectrum[:,0], spectrum[:,1], regrid, spec_errs=spectrum[:,2])
+spec_resample, spec_errs_resample = spectres(regrid, spectrum[:,0], spectrum[:,1], spec_errs=spectrum[:,2])
 
 
 # Plotting code
