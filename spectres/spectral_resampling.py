@@ -1,5 +1,5 @@
 """
-SpectRes: A fast spectral new_spec_wavs function.
+SpectRes: A fast spectral resampling function.
 Copyright (C) 2017  A. C. Carnall
 
 This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ import numpy as np
 def spectres(new_spec_wavs, old_spec_wavs, spec_fluxes, spec_errs=None):
 
     """ 
-    Function for new_spec_wavs spectra (and optionally associated uncertainties) onto a new wavelength basis.
+    Function for resampling spectra (and optionally associated uncertainties) onto a new wavelength basis.
 
     Parameters
     ----------

@@ -1,6 +1,6 @@
 *.pyc
 examples/bc2003_hr_xmiless_m62_kroup_ssp.ised_ASCII
-
+cython_spectres/*
 
 #################################
 
