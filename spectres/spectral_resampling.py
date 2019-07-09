@@ -95,8 +95,8 @@ def spectres(new_spec_wavs, old_spec_wavs, spec_fluxes, spec_errs=None):
     else:
         stop_idx = new_spec_size
 
-    start = start_idx
-    stop = start_idx
+    start = 0
+    stop = 0
     # Calculate new flux and uncertainty values, loop over new bins
     for j in range(start_idx, stop_idx - 1):
 
