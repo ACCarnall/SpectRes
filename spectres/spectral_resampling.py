@@ -103,13 +103,13 @@ def spectres(new_spec_wavs,
 
     # Find the first bin of the new spectrum
     if filter_lhs[0] < spec_lhs[0]:
-        start_idx = np.amax(np.where(filter_lhs <= spec_lhs[0]))
+        start_idx = np.amax(np.where(filter_lhs < spec_lhs[0]))
     else:
         start_idx = 0
 
     # Find the last bin of the new spectrum
     if filter_lhs[-1] > spec_rhs[-1]:
-        stop_idx = np.amin(np.where(filter_lhs >= spec_rhs[-1]))
+        stop_idx = np.amin(np.where(filter_lhs > spec_rhs[-1]))
     else:
         stop_idx = new_spec_size
 
@@ -125,13 +125,11 @@ def spectres(new_spec_wavs,
     for j in range(start_idx, stop_idx):
 
         # Find first old bin which is partially covered by the new bin
-        while spec_rhs[start] <= filter_lhs[j]:
+        while spec_rhs[start] < filter_lhs[j]:
             start += 1
 
         # Find last old bin which is partially covered by the new bin
-        # (old_spec_size - 2) because last index is (old_spec_size - 1) and we
-        # want the one before that
-        while ((spec_rhs[stop] < filter_rhs[j]) & (stop < old_spec_size - 1 )):
+        while ((spec_rhs[stop] < filter_rhs[j]) & (stop < old_spec_size - 1)):
             stop += 1
 
         # If new bin is fully within one old bin these are the same
