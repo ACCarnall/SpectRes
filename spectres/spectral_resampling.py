@@ -74,8 +74,8 @@ def spectres(new_spec_wavs,
     filter_widths[:-1] = filter_lhs[1:] - filter_lhs[:-1]
 
     # Arrays of the right-hand sides
-    spec_rhs = spec_lhs + spec_widths[0]
-    filter_rhs = filter_lhs + filter_widths[0]
+    spec_rhs = spec_lhs + spec_widths
+    filter_rhs = filter_lhs + filter_widths
 
     # New wavelength range is completely outside of the old range
     if filter_lhs[0] > spec_rhs[-1] or filter_rhs[-1] < spec_lhs[0]:
@@ -149,7 +149,7 @@ def spectres(new_spec_wavs,
                           (spec_rhs[stop] - spec_lhs[stop]))
 
             # Populate res_fluxes spectrum and uncertainty arrays
-            spec_widths_ranged = spec_widths[start:stop + 1]
+            spec_widths_ranged = spec_widths[start:stop + 1].copy()
             spec_widths_ranged[0] *= start_factor
             spec_widths_ranged[-1] *= end_factor
             f_widths = spec_widths_ranged * spec_fluxes[..., start:stop + 1]
