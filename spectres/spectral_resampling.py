@@ -3,7 +3,8 @@ from __future__ import print_function, division, absolute_import
 import numpy as np
 
 
-def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None):
+def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
+             verbose=True):
 
     """
     Function for resampling spectra (and optionally associated
@@ -31,8 +32,12 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None):
         associated with each spectral flux value.
 
     fill : float (optional)
-        Value for all new_fluxes and new_errs that fall outside the
-        wavelength range in spec_wavs. These will be nan by default.
+        Where new_wavs extends outside the wavelength range in spec_wavs
+        this value will be used as a filler in new_fluxes and new_errs.
+
+    verbose : bool (optional)
+        Setting verbose to False will suppress the default warning about
+        new_wavs extending outside spec_wavs and "fill" being used.
 
     Returns
     -------
@@ -96,7 +101,7 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None):
             if spec_errs is not None:
                 new_errs[..., j] = fill
 
-            if j == 0:
+            if (j == 0) and verbose:
                 print("\nSpectres: new_wavs contains values outside the range "
                       "in spec_wavs. New_fluxes and new_errs will be filled "
                       "with the value set in the 'fill' keyword argument (nan "
