@@ -9,9 +9,9 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='spectres', 
+    name='spectres',
 
-    version='2.0.0',
+    version='2.1.0',
 
     description='Simple spectral resampling',
 

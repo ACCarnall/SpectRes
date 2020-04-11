@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 from spectres import spectres
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
@@ -16,7 +16,7 @@ spec_resample, spec_errs_resample = spectres(regrid, spectrum[:,0], spectrum[:,1
 
 # Plotting code
 f, (ax1, ax2) = plt.subplots(2, figsize=(15,7))
-gs = gridspec.GridSpec(2, 1, height_ratios=[3,1]) 
+gs = gridspec.GridSpec(2, 1, height_ratios=[3,1])
 
 ax1 = plt.subplot(gs[0])
 ax2 = plt.subplot(gs[1])
