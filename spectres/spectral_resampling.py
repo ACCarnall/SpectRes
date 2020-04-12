@@ -9,44 +9,34 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
     """
     Function for resampling spectra (and optionally associated
     uncertainties) onto a new wavelength basis.
-
     Parameters
     ----------
-
     new_wavs : numpy.ndarray
         Array containing the new wavelength sampling desired for the
         spectrum or spectra.
-
     spec_wavs : numpy.ndarray
         1D array containing the current wavelength sampling of the
         spectrum or spectra.
-
     spec_fluxes : numpy.ndarray
         Array containing spectral fluxes at the wavelengths specified in
         spec_wavs, last dimension must correspond to the shape of
         spec_wavs. Extra dimensions before this may be used to include
         multiple spectra.
-
     spec_errs : numpy.ndarray (optional)
         Array of the same shape as spec_fluxes containing uncertainties
         associated with each spectral flux value.
-
     fill : float (optional)
         Where new_wavs extends outside the wavelength range in spec_wavs
         this value will be used as a filler in new_fluxes and new_errs.
-
     verbose : bool (optional)
         Setting verbose to False will suppress the default warning about
         new_wavs extending outside spec_wavs and "fill" being used.
-
     Returns
     -------
-
     new_fluxes : numpy.ndarray
         Array of resampled flux values, first dimension is the same
         length as new_wavs, other dimensions are the same as
         spec_fluxes.
-
     new_errs : numpy.ndarray
         Array of uncertainties associated with fluxes in new_fluxes.
         Only returned if spec_errs was specified.
@@ -60,6 +50,7 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
     # Arrays of left hand sides and widths for the old and new bins
     old_lhs = np.zeros(old_wavs.shape[0])
     old_widths = np.zeros(old_wavs.shape[0])
+    old_lhs = np.zeros(old_wavs.shape[0])
     old_lhs[0] = old_wavs[0]
     old_lhs[0] -= (old_wavs[1] - old_wavs[0])/2
     old_widths[-1] = (old_wavs[-1] - old_wavs[-2])
@@ -87,23 +78,6 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
         else:
             new_errs = np.copy(new_fluxes)
 
-    # Find the first bin of the new spectrum
-    if filter_lhs[0] < spec_lhs[0]:
-        start_idx = np.amax(np.where(filter_lhs < spec_lhs[0]))
-    else:
-        start_idx = 0
-
-    # Find the last bin of the new spectrum
-    if filter_lhs[-1] > spec_rhs[-1]:
-        stop_idx = np.amin(np.where(filter_lhs > spec_rhs[-1]))
-    else:
-        stop_idx = new_spec_size
-
-    # Pad the new flux with the fill_value provided
-    res_fluxes[:start_idx] += fill_value
-    res_fluxes[stop_idx:] += fill_value
-
-    # Indices of the old bins
     start = 0
     stop = 0
 
@@ -123,14 +97,17 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
                       "with the value set in the 'fill' keyword argument (nan "
                       "by default).\n")
             continue
-
         # Find first old bin which is partially covered by the new bin
         while old_lhs[start+1] <= new_lhs[j]:
             start += 1
+            if start == old_wavs.shape[0] - 1:
+                break
 
         # Find last old bin which is partially covered by the new bin
-        while (old_lhs[stop+1] < new_lhs[j+1]) or (new_lhs[j+1] > old_max_wav):
+        while old_lhs[stop+1] < new_lhs[j+1]:
             stop += 1
+            if stop == old_wavs.shape[0] - 1:
+                break
 
         # If new bin is fully inside an old bin start and stop are equal
         if stop == start:
@@ -141,10 +118,10 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
         # Otherwise multiply the first and last old bin widths by P_ij
         else:
             start_factor = ((old_lhs[start+1] - new_lhs[j])
-                            / (old_lhs[start+1] - old_lhs[start]))
+                            / (old_widths[start]))
 
             end_factor = ((new_lhs[j+1] - old_lhs[stop])
-                          / (old_lhs[stop+1] - old_lhs[stop]))
+                          / (old_widths[stop]))
 
             old_widths[start] *= start_factor
             old_widths[stop] *= end_factor
