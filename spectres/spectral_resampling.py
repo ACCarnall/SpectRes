@@ -3,6 +3,20 @@ from __future__ import print_function, division, absolute_import
 import numpy as np
 
 
+def make_bins(wavs):
+    """ Given a series of wavelength points, find the edges and widths
+    of corresponding wavelength bins. """
+    edges = np.zeros(wavs.shape[0]+1)
+    widths = np.zeros(wavs.shape[0])
+    edges[0] = wavs[0] - (wavs[1] - wavs[0])/2
+    widths[-1] = (wavs[-1] - wavs[-2])
+    edges[-1] = wavs[-1] + (wavs[-1] - wavs[-2])/2
+    edges[1:-1] = (wavs[1:] + wavs[:-1])/2
+    widths[:-1] = edges[1:-1] - edges[:-2]
+
+    return edges, widths
+
+
 def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
              verbose=True):
 
@@ -57,26 +71,10 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
     old_fluxes = spec_fluxes
     old_errs = spec_errs
 
-    # Arrays of left hand sides and widths for the old and new bins
-    old_lhs = np.zeros(old_wavs.shape[0])
-    old_widths = np.zeros(old_wavs.shape[0])
-    old_lhs = np.zeros(old_wavs.shape[0])
-    old_lhs[0] = old_wavs[0]
-    old_lhs[0] -= (old_wavs[1] - old_wavs[0])/2
-    old_widths[-1] = (old_wavs[-1] - old_wavs[-2])
-    old_lhs[1:] = (old_wavs[1:] + old_wavs[:-1])/2
-    old_widths[:-1] = old_lhs[1:] - old_lhs[:-1]
-    old_max_wav = old_lhs[-1] + old_widths[-1]
+    # Make arrays of edge positions and widths for the old and new bins
 
-    new_lhs = np.zeros(new_wavs.shape[0]+1)
-    new_widths = np.zeros(new_wavs.shape[0])
-    new_lhs[0] = new_wavs[0]
-    new_lhs[0] -= (new_wavs[1] - new_wavs[0])/2
-    new_widths[-1] = (new_wavs[-1] - new_wavs[-2])
-    new_lhs[-1] = new_wavs[-1]
-    new_lhs[-1] += (new_wavs[-1] - new_wavs[-2])/2
-    new_lhs[1:-1] = (new_wavs[1:] + new_wavs[:-1])/2
-    new_widths[:-1] = new_lhs[1:-1] - new_lhs[:-2]
+    old_edges, old_widths = make_bins(old_wavs)
+    new_edges, new_widths = make_bins(new_wavs)
 
     # Generate output arrays to be populated
     new_fluxes = np.zeros(old_fluxes[..., 0].shape + new_wavs.shape)
@@ -90,30 +88,31 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
 
     start = 0
     stop = 0
+    warned = False
 
     # Calculate new flux and uncertainty values, looping over new bins
     for j in range(new_wavs.shape[0]):
 
         # Add filler values if new_wavs extends outside of spec_wavs
-        if (new_lhs[j] < old_lhs[0]) or (new_lhs[j+1] > old_max_wav):
+        if (new_edges[j] < old_edges[0]) or (new_edges[j+1] > old_edges[-1]):
             new_fluxes[..., j] = fill
 
             if spec_errs is not None:
                 new_errs[..., j] = fill
 
-            if (j == 0) and verbose:
+            if (j == 0 or j == new_wavs.shape[0]-1) and verbose and not warned:
+                warned = True
                 print("\nSpectres: new_wavs contains values outside the range "
-                      "in spec_wavs. New_fluxes and new_errs will be filled "
-                      "with the value set in the 'fill' keyword argument (nan "
-                      "by default).\n")
+                      "in spec_wavs, new_fluxes and new_errs will be filled "
+                      "with the value set in the 'fill' keyword argument. \n")
             continue
 
         # Find first old bin which is partially covered by the new bin
-        while old_lhs[start+1] <= new_lhs[j]:
+        while old_edges[start+1] <= new_edges[j]:
             start += 1
 
         # Find last old bin which is partially covered by the new bin
-        while old_lhs[stop+1] < new_lhs[j+1]:
+        while old_edges[stop+1] < new_edges[j+1]:
             stop += 1
 
         # If new bin is fully inside an old bin start and stop are equal
@@ -124,11 +123,11 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
 
         # Otherwise multiply the first and last old bin widths by P_ij
         else:
-            start_factor = ((old_lhs[start+1] - new_lhs[j])
-                            / (old_lhs[start+1] - old_lhs[start]))
+            start_factor = ((old_edges[start+1] - new_edges[j])
+                            / (old_edges[start+1] - old_edges[start]))
 
-            end_factor = ((new_lhs[j+1] - old_lhs[stop])
-                          / (old_lhs[stop+1] - old_lhs[stop]))
+            end_factor = ((new_edges[j+1] - old_edges[stop])
+                          / (old_edges[stop+1] - old_edges[stop]))
 
             old_widths[start] *= start_factor
             old_widths[stop] *= end_factor
