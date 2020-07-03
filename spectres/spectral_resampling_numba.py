@@ -17,8 +17,24 @@ def make_bins(wavs):
 
     return edges, widths
 
-@jit(nopython=True, cache=True)
+
 def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
+             verbose=True):
+    """ 
+    Wrapper function to preserve interface when using Numba
+    """
+
+    new_fluxes, new_errs = spnumba(new_wavs, spec_wavs, spec_fluxes, spec_errs=spec_errs, fill = fill, verbose=verbose)
+
+    #If errors were not supplied, we should only return the fluxes and not the array of zeros
+    if spec_errs is None:
+        return new_fluxes
+    #But if they were, we should return everything
+    else:
+        return new_fluxes, new_errs
+
+@jit(nopython=True, cache=True)
+def spnumba(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
              verbose=True):
 
     """
@@ -84,8 +100,8 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
         if old_errs.shape != old_fluxes.shape:
             raise ValueError("If specified, spec_errs must be the same shape "
                              "as spec_fluxes.")
-        else:
-            new_errs = np.copy(new_fluxes)
+    #    else:
+    new_errs = np.zeros_like(new_fluxes)
 
     start = 0
     stop = 0
@@ -148,10 +164,5 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
             old_widths[start] /= start_factor
             old_widths[stop] /= end_factor
 
-    # If errors were supplied return both new_fluxes and new_errs.
-    if old_errs is not None:
-        return new_fluxes, new_errs
-
-    # Otherwise just return the new_fluxes spectrum array
-    else:
-        return new_fluxes
+    #numba doesn't seem to like having more than one return, so we're forcing it to return an array of zeros for the errors here
+    return new_fluxes, new_errs
