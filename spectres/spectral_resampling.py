@@ -53,8 +53,7 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
 
     edge_mode : bool (optional)
         If edge_mode is set to true, new_wavs will be read as the edges
-        of the bins for the desired
-        sampling.
+        of the bins for the desired sampling.
 
     Returns
     -------
