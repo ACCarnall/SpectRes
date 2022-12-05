@@ -7,18 +7,16 @@ def make_bins(wavs):
     """ Given a series of wavelength points, find the edges and widths
     of corresponding wavelength bins. """
     edges = np.zeros(wavs.shape[0]+1)
-    widths = np.zeros(wavs.shape[0])
     edges[0] = wavs[0] - (wavs[1] - wavs[0])/2
-    widths[-1] = (wavs[-1] - wavs[-2])
     edges[-1] = wavs[-1] + (wavs[-1] - wavs[-2])/2
     edges[1:-1] = (wavs[1:] + wavs[:-1])/2
-    widths[:-1] = edges[1:-1] - edges[:-2]
+    widths = edges[1:] - edges[:-1]
 
     return edges, widths
 
 
 def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
-             verbose=True):
+             verbose=True, edge_mode=False):
 
     """
     Function for resampling spectra (and optionally associated
@@ -53,6 +51,10 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
         Setting verbose to False will suppress the default warning about
         new_wavs extending outside spec_wavs and "fill" being used.
 
+    edge_mode : bool (optional)
+        If edge_mode is set to true, new_wavs will be read as the edges
+        of the bins for the desired sampling.
+
     Returns
     -------
 
@@ -74,10 +76,15 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
     # Make arrays of edge positions and widths for the old and new bins
 
     old_edges, old_widths = make_bins(old_wavs)
-    new_edges, new_widths = make_bins(new_wavs)
+    bins_shape = list(new_wavs.shape)
+    if edge_mode:
+        new_edges = new_wavs
+        bins_shape[0] -= 1
+    else:
+        new_edges, _ = make_bins(new_wavs)
 
     # Generate output arrays to be populated
-    new_fluxes = np.zeros(old_fluxes[..., 0].shape + new_wavs.shape)
+    new_fluxes = np.zeros(list(old_fluxes[..., 0].shape) + bins_shape)
 
     if old_errs is not None:
         if old_errs.shape != old_fluxes.shape:
@@ -91,7 +98,7 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
     warned = False
 
     # Calculate new flux and uncertainty values, looping over new bins
-    for j in range(new_wavs.shape[0]):
+    for j in range(bins_shape[0]):
 
         # Add filler values if new_wavs extends outside of spec_wavs
         if (new_edges[j] < old_edges[0]) or (new_edges[j+1] > old_edges[-1]):
@@ -100,7 +107,7 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
             if spec_errs is not None:
                 new_errs[..., j] = fill
 
-            if (j == 0 or j == new_wavs.shape[0]-1) and verbose and not warned:
+            if (j == 0 or j == bins_shape[0]-1) and verbose and not warned:
                 warned = True
                 print("\nSpectres: new_wavs contains values outside the range "
                       "in spec_wavs, new_fluxes and new_errs will be filled "
