@@ -3,6 +3,7 @@ from __future__ import print_function, division, absolute_import
 import numpy as np
 from numba import jit
 
+
 @jit(nopython=True, cache=True)
 def make_bins(wavs):
     """ Given a series of wavelength points, find the edges and widths
@@ -18,24 +19,27 @@ def make_bins(wavs):
     return edges, widths
 
 
-def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
-             verbose=True):
-    """ 
+def spectres_numba(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
+                   verbose=True):
+    """
     Wrapper function to preserve interface when using Numba
     """
 
-    new_fluxes, new_errs = spnumba(new_wavs, spec_wavs, spec_fluxes, spec_errs=spec_errs, fill = fill, verbose=verbose)
+    new_fluxes, new_errs = spnumba(new_wavs, spec_wavs, spec_fluxes,
+                                   spec_errs=spec_errs, fill=fill,
+                                   verbose=verbose)
 
-    #If errors were not supplied, we should only return the fluxes and not the array of zeros
+    # If errors not supplied, only return the fluxes not array of zeros
     if spec_errs is None:
         return new_fluxes
-    #But if they were, we should return everything
+    # But if they were, we should return everything
     else:
         return new_fluxes, new_errs
 
+
 @jit(nopython=True, cache=True)
 def spnumba(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
-             verbose=True):
+            verbose=True):
 
     """
     Function for resampling spectra (and optionally associated
@@ -94,7 +98,8 @@ def spnumba(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
     new_edges, new_widths = make_bins(new_wavs)
 
     # Generate output arrays to be populated
-    new_fluxes = np.zeros(np.shape(old_fluxes[..., 0]) + np.shape(new_wavs)) #ndarray.shape often doesn't compile properly while np.shape(ndarray) does)
+    # ndarray.shape often doesn't compile  while np.shape(ndarray) does)
+    new_fluxes = np.zeros(np.shape(old_fluxes[..., 0]) + np.shape(new_wavs))
 
     if old_errs is not None:
         if old_errs.shape != old_fluxes.shape:
@@ -164,5 +169,6 @@ def spnumba(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=0,
             old_widths[start] /= start_factor
             old_widths[stop] /= end_factor
 
-    #numba doesn't seem to like having more than one return, so we're forcing it to return an array of zeros for the errors here
+    # numba doesn't seem to like having more than one return, so we're
+    # forcing it to return an array of zeros for the errors here
     return new_fluxes, new_errs
