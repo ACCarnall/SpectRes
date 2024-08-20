@@ -1,5 +1,4 @@
 from __future__ import print_function, division, absolute_import
-import warnings
 
 import numpy as np
 
@@ -19,12 +18,7 @@ def make_bins(wavs):
 
 
 def spectres(
-    new_wavs,
-    spec_wavs,
-    spec_fluxes,
-    spec_errs=None,
-    fill=None,
-    verbose=True,
+    new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None, verbose=True
 ):
     """
     Function for resampling spectra (and optionally associated
@@ -96,6 +90,7 @@ def spectres(
 
     start = 0
     stop = 0
+    warned = False
 
     # Calculate new flux and uncertainty values, looping over new bins
     for j in range(new_wavs.shape[0]):
@@ -106,13 +101,16 @@ def spectres(
             if spec_errs is not None:
                 new_errs[..., j] = fill
 
-            if (j == 0 or j == new_wavs.shape[0] - 1) and verbose:
-                warnings.warn(
-                    "Spectres: new_wavs contains values outside the range "
+            if (
+                (j == 0 or j == new_wavs.shape[0] - 1)
+                and verbose
+                and not warned
+            ):
+                warned = True
+                print(
+                    "\nSpectres: new_wavs contains values outside the range "
                     "in spec_wavs, new_fluxes and new_errs will be filled "
-                    "with the value set in the 'fill' keyword argument "
-                    "(by default 0).",
-                    category=RuntimeWarning,
+                    "with the value set in the 'fill' keyword argument. \n"
                 )
             continue
 
