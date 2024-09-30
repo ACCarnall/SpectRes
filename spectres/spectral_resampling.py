@@ -58,7 +58,7 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
     -------
 
     new_fluxes : numpy.ndarray
-        Array of resampled flux values, first dimension is the same
+        Array of resampled flux values, last dimension is the same
         length as new_wavs, other dimensions are the same as
         spec_fluxes.
 
