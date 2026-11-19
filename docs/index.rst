@@ -31,6 +31,8 @@ Numba compiled version
 
 With thanks to Peter Scicluna, SpectRes now comes with an optional Numba compiled version, which should speed the code up under a range of circumstances. You can try this out by calling the ``spectres.spectres_numba`` function in place of ``spectres.spectres``.
 
+Note: updates to the main code in v3.0.0 might mean that the numba version is no longer faster, worth checking when you update if you've been using the numba version.
+
 API Documentation
 -----------------
 

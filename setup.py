@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='spectres',
 
-    version='2.2.2',
+    version='3.0.0',
 
     description='Simple spectral resampling',
 
