@@ -77,78 +77,58 @@ def spectres(new_wavs, spec_wavs, spec_fluxes, spec_errs=None, fill=None,
     old_edges, old_widths = make_bins(old_wavs)
     new_edges, new_widths = make_bins(new_wavs)
 
-    # Generate output arrays to be populated
-    new_fluxes = np.zeros(old_fluxes[..., 0].shape + new_wavs.shape)
+    if old_errs is not None and old_errs.shape != old_fluxes.shape:
+        raise ValueError("If specified, spec_errs must be the same shape "
+                         "as spec_fluxes.")
+
+    # Find first and last old bins partially covered by each new bin
+    last = old_wavs.shape[0] - 1
+    start = np.clip(np.searchsorted(old_edges, new_edges[:-1], side="right") - 1,
+                    0, last)
+    stop = np.clip(np.searchsorted(old_edges, new_edges[1:], side="left") - 1,
+                   0, last)
+
+    # Widths of the parts of the first and last old bins which are covered
+    start_width = old_edges[start+1] - new_edges[:-1]
+    end_width = new_edges[1:] - old_edges[stop]
+
+    # Indices for summing over old bins fully covered by each new bin
+    has_middle = (stop - start > 1)
+    sum_inds = np.minimum(np.c_[start+1, stop].ravel(), last)
+
+    # If new bin is fully inside an old bin start and stop are equal
+    single = (stop == start)
+
+    # Bins where new_wavs extends outside of spec_wavs get filler values
+    outside = (new_edges[:-1] < old_edges[0]) | (new_edges[1:] > old_edges[-1])
+
+    if verbose and (outside[0] or outside[-1]):
+        warnings.warn(
+            "Spectres: new_wavs contains values outside the range "
+            "in spec_wavs, new_fluxes and new_errs will be filled "
+            "with the value set in the 'fill' keyword argument "
+            "(by default 0).",
+            category=RuntimeWarning,
+        )
+
+    def resample(vals, power):
+        """ Sum (width*vals)**power over each new bin, then normalise. """
+        middle = np.add.reduceat((old_widths*vals)**power, sum_inds,
+                                 axis=-1)[..., ::2]*has_middle
+
+        total = (middle + (start_width*vals[..., start])**power
+                 + (end_width*vals[..., stop])**power)**(1./power)
+
+        new_vals = total/new_widths
+        new_vals[..., single] = vals[..., start[single]]
+        new_vals[..., outside] = fill
+        return new_vals
+
+    # Populate new_fluxes spectrum and uncertainty arrays
+    new_fluxes = resample(old_fluxes, 1)
 
     if old_errs is not None:
-        if old_errs.shape != old_fluxes.shape:
-            raise ValueError("If specified, spec_errs must be the same shape "
-                             "as spec_fluxes.")
-        else:
-            new_errs = np.copy(new_fluxes)
-
-    start = 0
-    stop = 0
-
-    # Calculate new flux and uncertainty values, looping over new bins
-    for j in range(new_wavs.shape[0]):
-
-        # Add filler values if new_wavs extends outside of spec_wavs
-        if (new_edges[j] < old_edges[0]) or (new_edges[j+1] > old_edges[-1]):
-            new_fluxes[..., j] = fill
-
-            if spec_errs is not None:
-                new_errs[..., j] = fill
-
-            if (j == 0 or j == new_wavs.shape[0]-1) and verbose:
-                warnings.warn(
-                    "Spectres: new_wavs contains values outside the range "
-                    "in spec_wavs, new_fluxes and new_errs will be filled "
-                    "with the value set in the 'fill' keyword argument "
-                    "(by default 0).",
-                    category=RuntimeWarning,
-                )
-            continue
-
-        # Find first old bin which is partially covered by the new bin
-        while old_edges[start+1] <= new_edges[j]:
-            start += 1
-
-        # Find last old bin which is partially covered by the new bin
-        while old_edges[stop+1] < new_edges[j+1]:
-            stop += 1
-
-        # If new bin is fully inside an old bin start and stop are equal
-        if stop == start:
-            new_fluxes[..., j] = old_fluxes[..., start]
-            if old_errs is not None:
-                new_errs[..., j] = old_errs[..., start]
-
-        # Otherwise multiply the first and last old bin widths by P_ij
-        else:
-            start_factor = ((old_edges[start+1] - new_edges[j])
-                            / (old_edges[start+1] - old_edges[start]))
-
-            end_factor = ((new_edges[j+1] - old_edges[stop])
-                          / (old_edges[stop+1] - old_edges[stop]))
-
-            old_widths[start] *= start_factor
-            old_widths[stop] *= end_factor
-
-            # Populate new_fluxes spectrum and uncertainty arrays
-            f_widths = old_widths[start:stop+1]*old_fluxes[..., start:stop+1]
-            new_fluxes[..., j] = np.sum(f_widths, axis=-1)
-            new_fluxes[..., j] /= np.sum(old_widths[start:stop+1])
-
-            if old_errs is not None:
-                e_wid = old_widths[start:stop+1]*old_errs[..., start:stop+1]
-
-                new_errs[..., j] = np.sqrt(np.sum(e_wid**2, axis=-1))
-                new_errs[..., j] /= np.sum(old_widths[start:stop+1])
-
-            # Put back the old bin widths to their initial values
-            old_widths[start] /= start_factor
-            old_widths[stop] /= end_factor
+        new_errs = resample(old_errs, 2)
 
     # If errors were supplied return both new_fluxes and new_errs.
     if old_errs is not None:
